@@ -8,7 +8,7 @@ import { GetWeatherDto } from '../../common/dtos/get-weather.dto';
 
 @Injectable()
 export class WeatherService {
-  private readonly API_URL = 'https://api.openweathermap.org/data/2.5/onecall';
+  private readonly API_URL = 'https://api.openweathermap.org/data/3.0/onecall';
   private readonly API_KEY = process.env.OPENWEATHER_API_KEY;
 
   constructor(
@@ -17,25 +17,32 @@ export class WeatherService {
     private httpService: HttpService,
   ) {}
 
-  async fetchAndSaveWeather(fetchDto: FetchWeatherDto): Promise<Weather> {
+  async fetchAndSaveWeather(fetchDto: FetchWeatherDto) {
     const { lat, lon, part } = fetchDto;
     const params = { lat, lon, exclude: part, appid: this.API_KEY };
-    const response = await this.httpService
-      .get(this.API_URL, { params })
-      .toPromise();
 
-    const weatherData = response.data;
+    console.log(params);
+
+    const { data: weatherData } = await this.httpService.axiosRef.get(
+      this.API_URL,
+      {
+        params,
+      },
+    );
+
     const weather = this.weatherRepository.create({
       lat,
       lon,
       part,
       data: weatherData,
     });
+
     return this.weatherRepository.save(weather);
   }
 
   async getWeather(getDto: GetWeatherDto): Promise<Weather | null> {
     const { lat, lon, part } = getDto;
+
     return this.weatherRepository.findOne({ where: { lat, lon, part } });
   }
 }

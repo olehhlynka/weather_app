@@ -1,7 +1,6 @@
 import {
   Controller,
   Post,
-  Body,
   Get,
   Query,
   UseInterceptors,
@@ -17,7 +16,7 @@ export class WeatherController {
   constructor(private readonly weatherService: WeatherService) {}
 
   @Post()
-  async fetchAndSaveWeather(@Body() fetchDto: FetchWeatherDto) {
+  async fetchAndSaveWeather(@Query() fetchDto: FetchWeatherDto) {
     return this.weatherService.fetchAndSaveWeather(fetchDto);
   }
 
@@ -28,6 +27,7 @@ export class WeatherController {
     if (!weather) {
       throw new NotFoundException('Weather data not found');
     }
+
     return weather;
   }
 }

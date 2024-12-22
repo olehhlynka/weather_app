@@ -1,15 +1,10 @@
-import {
-  CallHandler,
-  ExecutionContext,
-  Injectable,
-  NestInterceptor,
-} from '@nestjs/common';
+import { CallHandler, Injectable, NestInterceptor } from '@nestjs/common';
 import { map } from 'rxjs/operators';
 import { WeatherResponse } from '../types/weather-response.type';
 
 @Injectable()
 export class FormatResponseInterceptor implements NestInterceptor {
-  intercept(context: ExecutionContext, next: CallHandler) {
+  intercept(_, next: CallHandler) {
     return next.handle().pipe(
       map((data) => {
         const {
@@ -31,7 +26,7 @@ export class FormatResponseInterceptor implements NestInterceptor {
           humidity,
           uvi,
           wind_speed,
-        } as WeatherResponse;
+        } satisfies WeatherResponse;
       }),
     );
   }
